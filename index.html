@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login dengan Google</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .profile {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .profile img {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="g_id_onload"
+       data-client_id="GANTI_DENGAN_CLIENT_ID_KAMU.apps.googleusercontent.com"
+       data-login_uri=""
+       data-callback="handleCredentialResponse">
+  </div>
+
+  <div class="g_id_signin"
+       data-type="standard"
+       data-size="large"
+       data-theme="outline"
+       data-text="sign_in_with"
+       data-shape="rectangular"
+       data-logo_alignment="left">
+  </div>
+
+  <div class="profile" id="profile"></div>
+
+  <script>
+    function handleCredentialResponse(response) {
+      // Decode token kalau mau (atau kirim ke server)
+      const data = parseJwt(response.credential);
+      console.log("Google User Data:", data);
+      document.getElementById("profile").innerHTML = `
+        <img src="${data.picture}" alt="Foto Profile">
+        <h3>${data.name}</h3>
+        <p>${data.email}</p>
+      `;
+      // Redirect ke app kamu
+      setTimeout(() => {
+        window.location.href = "index.html"; // Ganti link tujuan
+      }, 1500);
+    }
+
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+  </script>
+
+</body>
+</html>
